@@ -23,6 +23,7 @@ int getSystemTime(char* buffer)
     timeinfo = localtime(&rawtime);
     strftime(buf, sizeof(buf), "Now is %Y-%m-%d %H:%M:%S", timeinfo);
     strcpy(buffer, buf);
+    return 0;
 }
 
 //CPUÀûÓÃÂÊ

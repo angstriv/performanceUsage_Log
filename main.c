@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <Windows.h>
 #include<time.h>
 #include <tchar.h>
@@ -100,9 +101,33 @@ void GetSystemName(char* osname)
 
 int main() 
 {
+    //记录数据准备
+    int cpuUsage = 0;
+    int memoryUsage = 0;
+    char writeMode[4] = "";
+    
+    printf("请输入cpu占用率:");
+    scanf("%d", &cpuUsage);
+    printf("请输入内存占用率:");
+    scanf("%d", &memoryUsage);
+    while (true)
+    {
+        printf("请输入写入方式(w/a):");
+        gets(writeMode);
+        if ((strcmp(writeMode, "w") == 0) || (strcmp(writeMode, "a") == 0))
+        {
+            break;
+        }
+        else
+        {
+            printf("输入有误\n");
+        }
+    }
+    
+
     //系统运行时间
     clock_t start, finish;
-    double duration;
+    long long int duration;
 
     start = clock();//开始时间
 
@@ -121,26 +146,37 @@ int main()
         //获取系统时间
         char buffer[128];
         getSystemTime(buffer);
-        puts(buffer);
+        printf("%s\n", buffer);
         
         //运行时间
         finish = clock();//计时
-        duration = (double)(finish - start) / CLOCKS_PER_SEC;
-        printf("已运行%.0f 秒\n", duration);
+        duration = (long long int)(finish - start) / CLOCKS_PER_SEC;
+        printf("已运行%lld秒\n", duration);
         
         //CPU利用率
         U_CHAR  sysStateCpu[5];
-        double cpu = CpuUseage();
-        sprintf((char*)sysStateCpu, "%.2lf", cpu);
-        printf("CPU使用率：%s%%\n", sysStateCpu);
+        int cpu = (int)CpuUseage();
+        printf("CPU使用率：%d%%\n", cpu);
 
         //内存使用率
-        char bufPreCPU[5];
         MEMORYSTATUSEX statex;
         statex.dwLength = sizeof(statex);
         GlobalMemoryStatusEx(&statex);
-        sprintf(bufPreCPU, "内存使用率：%ld%%\n", statex.dwMemoryLoad);
-        puts(bufPreCPU);
+        printf("内存使用率：%ld%%\n", statex.dwMemoryLoad);//u_long
+        
+        printf("\n");//每一次完整的打印空一行
+    
+        if (cpu >= cpuUsage || statex.dwMemoryLoad >= memoryUsage)
+        {
+            FILE* abnormalLog_p = fopen("abnormalLog.txt", writeMode);//打开文件
+            fprintf(abnormalLog_p, "%s\n", buffer);
+            fprintf(abnormalLog_p, "已运行%lld秒\n", duration);
+            fprintf(abnormalLog_p, "CPU使用率：%d%%\n", cpu);
+            fprintf(abnormalLog_p, "内存使用率：%ld%%\n", statex.dwMemoryLoad);
+            fputs("\n", abnormalLog_p);//每一次完整的打印空一行
+            fclose(abnormalLog_p);//关闭文件
+        }
+    
     }
 
     
