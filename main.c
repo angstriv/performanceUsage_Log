@@ -105,11 +105,12 @@ int main()
     int cpuUsage = 0;
     int memoryUsage = 0;
     char writeMode[4] = "";
-    
+
     printf("请输入cpu占用率:");
     scanf("%d", &cpuUsage);
     printf("请输入内存占用率:");
     scanf("%d", &memoryUsage);
+    getchar();//捕获回车防止下面gets捕获到回车以为输入结束，导致用户无法输入
     while (true)
     {
         printf("请输入写入方式(w/a):");
@@ -168,7 +169,7 @@ int main()
     
         if (cpu >= cpuUsage || statex.dwMemoryLoad >= memoryUsage)
         {
-            FILE* abnormalLog_p = fopen("abnormalLog.txt", writeMode);//打开文件
+            FILE* abnormalLog_p = fopen("abnormalLog.txt",writeMode);//打开文件
             fprintf(abnormalLog_p, "%s\n", buffer);
             fprintf(abnormalLog_p, "已运行%lld秒\n", duration);
             fprintf(abnormalLog_p, "CPU使用率：%d%%\n", cpu);
@@ -203,7 +204,6 @@ int main()
 
     //    float hardDiskUsage = 1 - freeHardDisk / totalHardDisk;
     //}本程序不需要该功能，因此暂时屏蔽
-
 
 
     system("pause");
